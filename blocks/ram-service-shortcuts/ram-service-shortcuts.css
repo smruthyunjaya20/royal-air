@@ -1,0 +1,591 @@
+.ram-shortcuts {
+  position: relative;
+
+  margin-top: -54px;
+  z-index: 40;
+
+  max-width: 1320px;
+  margin-left: auto;
+  margin-right: auto;
+
+  padding: 0 24px;
+
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* WRAPPER */
+
+.ram-shortcuts-wrapper {
+
+  flex: 1;
+
+  background: white;
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.10);
+
+  overflow: hidden;
+}
+
+/* TRACK */
+
+.ram-shortcuts-track {
+
+  display: flex;
+  align-items: center;
+
+  gap: 54px;
+
+  padding: 28px 40px;
+
+  overflow-x: auto;
+
+  scroll-behavior: smooth;
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.ram-shortcuts-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* ITEM */
+
+.ram-shortcut-item {
+
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 14px;
+
+  flex-shrink: 0;
+
+  color: #c8102e;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  letter-spacing: 0.2px;
+
+  white-space: nowrap;
+
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.ram-shortcut-item::after {
+
+  content: '';
+
+  position: absolute;
+  left: 0;
+  bottom: -8px;
+
+  width: 0;
+  height: 2px;
+
+  background: #c8102e;
+
+  transition: width 0.3s ease;
+}
+
+.ram-shortcut-item:hover {
+
+  color: #a70027;
+
+  transform: translateY(-2px);
+}
+
+.ram-shortcut-item:hover::after {
+  width: 100%;
+}
+
+/* ICON */
+
+.ram-icon {
+
+  position: relative;
+
+  width: 24px;
+  height: 24px;
+
+  flex-shrink: 0;
+}
+
+/* FLIGHT PASS */
+
+.ram-icon.flight-pass::before {
+
+  content: '';
+
+  position: absolute;
+  inset: 3px;
+
+  border: 2px solid currentColor;
+
+  border-radius: 2px;
+
+  transform: rotate(-8deg);
+}
+
+.ram-icon.flight-pass::after {
+
+  content: '';
+
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  width: 10px;
+  height: 2px;
+
+  background: currentColor;
+
+  transform: translate(-50%, -50%);
+}
+
+/* UPGRADE */
+
+.ram-icon.upgrade::before {
+
+  content: '';
+
+  position: absolute;
+
+  left: 5px;
+  top: 2px;
+
+  width: 0;
+  height: 0;
+
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 11px solid currentColor;
+}
+
+.ram-icon.upgrade::after {
+
+  content: '';
+
+  position: absolute;
+
+  left: 10px;
+  top: 12px;
+
+  width: 4px;
+  height: 8px;
+
+  background: currentColor;
+}
+
+/* SEAT */
+
+.ram-icon.seat::before {
+
+  content: '';
+
+  position: absolute;
+
+  left: 3px;
+  bottom: 2px;
+
+  width: 12px;
+  height: 10px;
+
+  border: 2px solid currentColor;
+
+  border-top: none;
+
+  border-radius: 2px;
+}
+
+.ram-icon.seat::after {
+
+  content: '';
+
+  position: absolute;
+
+  left: 12px;
+  top: 2px;
+
+  width: 8px;
+  height: 14px;
+
+  border-radius: 2px;
+
+  background: currentColor;
+}
+
+/* EXTRA BAGS */
+
+.ram-icon.extra-bags::before {
+
+  content: '';
+
+  position: absolute;
+
+  left: 4px;
+  top: 7px;
+
+  width: 14px;
+  height: 12px;
+
+  border: 2px solid currentColor;
+
+  border-radius: 3px;
+}
+
+.ram-icon.extra-bags::after {
+
+  content: '';
+
+  position: absolute;
+
+  left: 7px;
+  top: 1px;
+
+  width: 8px;
+  height: 6px;
+
+  border: 2px solid currentColor;
+
+  border-bottom: none;
+
+  border-radius: 8px 8px 0 0;
+}
+
+/* E-SKYSHOP */
+
+.ram-icon.e-skyshop::before {
+
+  content: '';
+
+  position: absolute;
+
+  left: 2px;
+  top: 5px;
+
+  width: 16px;
+  height: 10px;
+
+  border: 2px solid currentColor;
+
+  border-top: none;
+
+  border-radius: 2px;
+}
+
+.ram-icon.e-skyshop::after {
+
+  content: '';
+
+  position: absolute;
+
+  left: 5px;
+  top: 1px;
+
+  width: 10px;
+  height: 6px;
+
+  border: 2px solid currentColor;
+
+  border-bottom: none;
+
+  border-radius: 4px 4px 0 0;
+
+  transform: skewX(-10deg);
+}
+
+/* NAVIGATION */
+
+.ram-shortcut-nav {
+
+  width: 28px;
+  height: 28px;
+
+  flex-shrink: 0;
+
+  display: block;
+  object-fit: contain;
+
+  cursor: pointer;
+
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.ram-shortcut-nav.next {
+  transform: scaleX(-1);
+}
+
+.ram-shortcut-nav:hover {
+  opacity: 0.7;
+}
+
+
+
+/* MOBILE */
+
+@media (max-width: 992px) {
+
+  .ram-shortcuts {
+
+    margin-top: -34px;
+
+    padding: 0 16px;
+  }
+
+  .ram-shortcuts-wrapper {
+    border-radius: 20px;
+  }
+
+  .ram-shortcuts-track {
+
+    gap: 32px;
+
+    padding:
+      22px 24px;
+  }
+
+  .ram-shortcut-item {
+
+    gap: 10px;
+
+    font-size: 14px;
+  }
+
+  .ram-shortcut-nav {
+
+    width: 22px;
+    height: 22px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .ram-shortcuts {
+
+    margin-top: -24px;
+
+    gap: 8px;
+  }
+
+  .ram-shortcuts-track {
+
+    gap: 24px;
+
+    padding:
+      18px 20px;
+  }
+
+  .ram-shortcut-item {
+    font-size: 13px;
+  }
+
+  .ram-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .ram-shortcut-nav {
+
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* =========================================
+   INT-EN FIRST FOLD OVERRIDES
+========================================= */
+
+.ram-homepage-page .ram-shortcuts {
+  margin-top: 18px;
+  max-width: 1080px;
+  padding: 0;
+  gap: 0;
+}
+
+.ram-homepage-page .section.ram-homepage-page-content.ram-service-shortcuts-container {
+  max-width: none;
+  width: 100%;
+}
+
+.ram-homepage-page .ram-service-shortcuts-container > div,
+.ram-homepage-page .ram-service-shortcuts-container .ram-service-shortcuts.block {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+}
+
+.ram-homepage-page .ram-service-shortcuts-container {
+  background: #fff;
+  padding-top: 6px;
+}
+
+.ram-homepage-page .ram-shortcuts-wrapper {
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+}
+
+.ram-homepage-page .ram-shortcuts-track {
+  justify-content: center;
+  gap: 0;
+  padding: 8px 0;
+}
+
+.ram-homepage-page .ram-shortcuts-track .ram-shortcut-item {
+  color: #c8102e;
+  font-size: 15px;
+  font-weight: 400;
+  gap: 8px;
+  flex: 1;
+  justify-content: center;
+  min-height: 36px;
+  padding: 6px 8px;
+}
+
+.ram-homepage-page .ram-shortcut-item::after {
+  display: none;
+}
+
+.ram-homepage-page .ram-shortcut-nav {
+  width: 22px;
+  height: 22px;
+  margin: 0 4px;
+}
+
+.ram-homepage-page .ram-shortcut-nav:hover {
+  opacity: 0.7;
+}
+
+@media (max-width: 1275px) {
+  .ram-homepage-page .ram-shortcuts {
+    width: min(100%, 1080px);
+    max-width: 1080px;
+    gap: 8px;
+    justify-content: space-between;
+  }
+
+  .ram-homepage-page .ram-shortcuts-track {
+    gap: 16px;
+  }
+
+  .ram-homepage-page .ram-shortcut-item {
+    gap: 4px;
+  }
+
+  .ram-homepage-page .ram-shortcut-nav {
+    width: 16px;
+    height: 12px;
+    margin: 0 5px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .ram-homepage-page .ram-shortcuts {
+    width: calc(100% - 32px);
+    max-width: 1080px;
+    padding: 0;
+  }
+}
+
+@media (max-width: 991px) {
+  .ram-homepage-page .ram-shortcuts {
+    margin-top: 18px;
+    max-width: 840px;
+    padding: 0;
+    gap: 8px;
+    justify-content: space-between;
+  }
+
+  .ram-homepage-page .ram-shortcuts-wrapper {
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+
+  .ram-homepage-page .ram-shortcuts-track {
+    justify-content: center;
+    padding: 8px 0;
+    gap: 16px;
+  }
+
+  .ram-homepage-page .ram-shortcut-item {
+    font-size: 15px;
+    font-weight: 400;
+    min-height: 36px;
+    padding: 6px 8px;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 900px) {
+  .ram-homepage-page .ram-shortcuts {
+    margin-top: 0;
+    max-width: none;
+    width: 100%;
+    padding: 0;
+    gap: 8px;
+    justify-content: space-between;
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .ram-homepage-page .ram-shortcuts-wrapper {
+    flex: 1;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+
+  .ram-homepage-page .ram-shortcuts-track {
+    justify-content: center;
+    padding: 8px 0;
+    gap: 0;
+  }
+
+  .ram-homepage-page .ram-shortcut-item {
+    min-height: 50px;
+    padding: 6px 8px;
+    font-size: 16px;
+    line-height: 24px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: normal;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .ram-homepage-page .ram-shortcut-item .ram-label {
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .ram-homepage-page .ram-shortcut-item .ram-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .ram-homepage-page .ram-shortcut-nav {
+    width: 16px;
+    height: 12px;
+    margin: 0 5px;
+  }
+}
+
+@media (max-width: 420px) {
+  .ram-homepage-page .ram-shortcut-item {
+    min-height: 68px;
+  }
+}
+

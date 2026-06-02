@@ -13,7 +13,9 @@
       "image",
       "button",
       "hero",
-      "ram-header"
+      "ram-header",
+      "ram-hero",
+      "ram-service-shortcuts"
     ]
   }
 ]
