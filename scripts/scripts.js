@@ -1,7 +1,5 @@
 import {
   buildBlock,
-  loadHeader,
-  loadFooter,
   decorateIcons,
   decorateSections,
   decorateBlocks,
