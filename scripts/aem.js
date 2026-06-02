@@ -666,8 +666,6 @@ export {
   getMetadata,
   loadBlock,
   loadCSS,
-  loadFooter,
-  loadHeader,
   loadScript,
   loadSection,
   loadSections,
