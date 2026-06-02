@@ -114,6 +114,21 @@ function decorateButtons(main) {
 }
 
 /**
+ * Moves Universal Editor instrumentation attributes from one element to another.
+ * @param {Element} source The source element containing authored attributes
+ * @param {Element} target The target element that should keep instrumentation
+ */
+export function moveInstrumentation(source, target) {
+  if (!source || !target || !source.attributes) return;
+
+  [...source.attributes].forEach(({ name, value }) => {
+    if (name.startsWith('data-aue-') || name.startsWith('data-richtext-')) {
+      target.setAttribute(name, value);
+    }
+  });
+}
+
+/**
  * Decorates the main element.
  * @param {Element} main The main element
  */
