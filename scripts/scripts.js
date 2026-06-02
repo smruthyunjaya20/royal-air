@@ -100,14 +100,14 @@ function normalizeRamHomepageStructure(main) {
   if (sections.length !== 1) return;
 
   const mergedSection = sections[0];
-  const wrappers = [...mergedSection.querySelectorAll(':scope > div')];
-  const ramWrappers = wrappers.filter((wrapper) => getRamBlockName(wrapper));
+  const wrappers = [...mergedSection.querySelectorAll(':scope > div')]
+    .filter((wrapper) => getRamBlockName(wrapper));
 
-  if (ramWrappers.length < 6) return;
+  if (wrappers.length < 6) return;
 
-  const hasHeader = ramWrappers.some((wrapper) => getRamBlockName(wrapper) === 'ram-header');
-  const hasHero = ramWrappers.some((wrapper) => getRamBlockName(wrapper) === 'ram-hero');
-  const hasShortcuts = ramWrappers.some((wrapper) => getRamBlockName(wrapper) === 'ram-service-shortcuts');
+  const hasHeader = wrappers.some((wrapper) => getRamBlockName(wrapper) === 'ram-header');
+  const hasHero = wrappers.some((wrapper) => getRamBlockName(wrapper) === 'ram-hero');
+  const hasShortcuts = wrappers.some((wrapper) => getRamBlockName(wrapper) === 'ram-service-shortcuts');
   if (!hasHeader || !hasHero || !hasShortcuts) return;
 
   const normalizedSections = [];
@@ -116,14 +116,6 @@ function normalizeRamHomepageStructure(main) {
     const currentBlock = getRamBlockName(current);
     const next = wrappers[i + 1];
     const nextBlock = getRamBlockName(next);
-
-    if (!currentBlock) {
-      normalizedSections.push({
-        className: 'section',
-        wrappers: [current],
-      });
-      continue;
-    }
 
     if (currentBlock === 'ram-header' && nextBlock === 'ram-hero') {
       normalizedSections.push({
