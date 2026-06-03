@@ -6,6 +6,10 @@
   z-index: 999;
 }
 
+.section.ram-header-container {
+  padding: 0;
+}
+
 .section.ram-header-container > .ram-header-wrapper,
 .section.ram-header-container .ram-header.block {
   max-width: none;
