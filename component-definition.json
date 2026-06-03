@@ -98,6 +98,66 @@
           }
         },
         {
+          "title": "Ram Alliance Accordion",
+          "id": "ram-alliance-accordion",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Ram Alliance  Accordion",
+                  "model": "ram-alliance-accordion"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Ram Download App",
+          "id": "ram-download-app",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Ram Download App",
+                  "model": "ram-download-app"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Ram Flying Benefits Cards",
+          "id": "ram-flying-benefits-cards",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Ram Flying Benefits Cards",
+                  "model": "ram-flying-benefits-cards"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Ram Footer",
+          "id": "ram-footer",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Ram Footer",
+                  "model": "ram-footer"
+                }
+              }
+            }
+          }
+        },
+        {
           "title": "Ram Header",
           "id": "ram-header",
           "plugins": {
@@ -122,6 +182,81 @@
                 "template": {
                   "name": "Ram Hero",
                   "model": "ram-hero"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Ram Network Accordion",
+          "id": "ram-network-accordion",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Ram Network Accordion",
+                  "model": "ram-network-accordion"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Ram Newsletter",
+          "id": "ram-news-letter",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Ram Newsletter",
+                  "model": "ram-news-letter"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Ram Offers Carousel",
+          "id": "ram-offers-carousel",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Ram Offers Carousel",
+                  "model": "ram-offers-carousel"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Ram Offers",
+          "id": "ram-offers",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Ram Offers",
+                  "model": "ram-offers"
+                }
+              }
+            }
+          }
+        },
+        {
+          "title": "Ram Safar Flyer",
+          "id": "ram-safar-flyer",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Ram Safar Flyer",
+                  "model": "ram-safar-flyer"
                 }
               }
             }
