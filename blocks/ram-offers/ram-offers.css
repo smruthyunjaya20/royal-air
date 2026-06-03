@@ -8,7 +8,7 @@
   width: 100%;
 }
 
-.ram-homepage-page .ram-offers-container > div,
+.ram-homepage-page .ram-offers-container > .ram-offers-wrapper,
 .ram-homepage-page .ram-offers-container .ram-offers.block {
   max-width: none;
   width: 100%;
