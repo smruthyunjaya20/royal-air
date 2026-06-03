@@ -100,56 +100,87 @@ function normalizeRamHomepageStructure(main) {
   if (main.querySelector('[data-aue-resource]')) return;
 
   const sections = [...main.querySelectorAll(':scope > .section')];
-  if (sections.length !== 1) return;
+  if (!sections.length) return;
 
-  const mergedSection = sections[0];
-  const wrappers = [...mergedSection.querySelectorAll(':scope > div')];
-  const ramWrappers = wrappers.filter((wrapper) => getRamBlockName(wrapper));
+  const getWrappers = (section) => [...section.querySelectorAll(':scope > div')];
+  const getRamWrappers = (section) => getWrappers(section)
+    .filter((wrapper) => getRamBlockName(wrapper));
+  const getRamBlockNames = (section) => getRamWrappers(section)
+    .map((wrapper) => getRamBlockName(wrapper));
 
-  if (ramWrappers.length < 6) return;
+  const allRamBlockNames = sections.flatMap((section) => getRamBlockNames(section));
+  const hasHeader = allRamBlockNames.includes('ram-header');
+  const hasHero = allRamBlockNames.includes('ram-hero');
+  if (!hasHeader || !hasHero) return;
 
-  const hasHeader = ramWrappers.some((wrapper) => getRamBlockName(wrapper) === 'ram-header');
-  const hasHero = ramWrappers.some((wrapper) => getRamBlockName(wrapper) === 'ram-hero');
-  const hasShortcuts = ramWrappers.some((wrapper) => getRamBlockName(wrapper) === 'ram-service-shortcuts');
-  if (!hasHeader || !hasHero || !hasShortcuts) return;
+  if (sections.length === 1) {
+    const mergedSection = sections[0];
+    const wrappers = getWrappers(mergedSection);
+    const normalizedSections = [];
 
-  const normalizedSections = [];
-  for (let i = 0; i < wrappers.length; i += 1) {
-    const current = wrappers[i];
-    const currentBlock = getRamBlockName(current);
-    const next = wrappers[i + 1];
-    const nextBlock = getRamBlockName(next);
+    for (let i = 0; i < wrappers.length; i += 1) {
+      const current = wrappers[i];
+      const currentBlock = getRamBlockName(current);
+      const next = wrappers[i + 1];
+      const nextBlock = getRamBlockName(next);
 
-    if (!currentBlock) {
-      normalizedSections.push({
-        className: 'section',
-        wrappers: [current],
-      });
-      continue;
+      if (!currentBlock) {
+        normalizedSections.push({
+          className: 'section',
+          wrappers: [current],
+        });
+        continue;
+      }
+
+      if (currentBlock === 'ram-header' && nextBlock === 'ram-hero') {
+        normalizedSections.push({
+          className: getSectionClass(['ram-header', 'ram-hero']),
+          wrappers: [current, next],
+        });
+        i += 1;
+      } else {
+        normalizedSections.push({
+          className: getSectionClass([currentBlock]),
+          wrappers: [current],
+        });
+      }
     }
 
-    if (currentBlock === 'ram-header' && nextBlock === 'ram-hero') {
-      normalizedSections.push({
-        className: getSectionClass(['ram-header', 'ram-hero']),
-        wrappers: [current, next],
+    mergedSection.remove();
+    normalizedSections.forEach(({ className, wrappers: sectionWrappers }) => {
+      const section = document.createElement('div');
+      section.className = className;
+      sectionWrappers.forEach((wrapper) => {
+        section.appendChild(wrapper);
       });
-      i += 1;
-    } else {
-      normalizedSections.push({
-        className: getSectionClass([currentBlock]),
-        wrappers: [current],
-      });
+      main.appendChild(section);
+    });
+    return;
+  }
+
+  const currentSections = [...main.querySelectorAll(':scope > .section')];
+  for (let i = 0; i < currentSections.length - 1; i += 1) {
+    const section = currentSections[i];
+    const nextSection = currentSections[i + 1];
+    const currentBlockNames = getRamBlockNames(section);
+    const nextBlockNames = getRamBlockNames(nextSection);
+
+    if (currentBlockNames.length === 1
+      && nextBlockNames.length === 1
+      && currentBlockNames[0] === 'ram-header'
+      && nextBlockNames[0] === 'ram-hero') {
+      const heroWrapper = getRamWrappers(nextSection)[0];
+      if (heroWrapper) {
+        section.appendChild(heroWrapper);
+        nextSection.remove();
+      }
     }
   }
 
-  mergedSection.remove();
-  normalizedSections.forEach(({ className, wrappers: sectionWrappers }) => {
-    const section = document.createElement('div');
-    section.className = className;
-    sectionWrappers.forEach((wrapper) => {
-      section.appendChild(wrapper);
-    });
-    main.appendChild(section);
+  [...main.querySelectorAll(':scope > .section')].forEach((section) => {
+    const blockNames = getRamBlockNames(section);
+    if (!blockNames.length) return;
+    section.className = getSectionClass(blockNames);
   });
 }
 
