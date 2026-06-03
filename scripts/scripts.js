@@ -107,17 +107,11 @@ function normalizeRamHomepageStructure(main) {
     .filter((wrapper) => getRamBlockName(wrapper));
   const getRamBlockNames = (section) => getRamWrappers(section)
     .map((wrapper) => getRamBlockName(wrapper));
+  const splitSectionByWrappers = (section) => {
+    const wrappers = getWrappers(section);
+    if (wrappers.length <= 1) return;
 
-  const allRamBlockNames = sections.flatMap((section) => getRamBlockNames(section));
-  const hasHeader = allRamBlockNames.includes('ram-header');
-  const hasHero = allRamBlockNames.includes('ram-hero');
-  if (!hasHeader || !hasHero) return;
-
-  if (sections.length === 1) {
-    const mergedSection = sections[0];
-    const wrappers = getWrappers(mergedSection);
-    const normalizedSections = [];
-
+    const chunks = [];
     for (let i = 0; i < wrappers.length; i += 1) {
       const current = wrappers[i];
       const currentBlock = getRamBlockName(current);
@@ -125,38 +119,42 @@ function normalizeRamHomepageStructure(main) {
       const nextBlock = getRamBlockName(next);
 
       if (!currentBlock) {
-        normalizedSections.push({
-          className: 'section',
-          wrappers: [current],
-        });
+        chunks.push({ className: 'section', wrappers: [current] });
         continue;
       }
 
       if (currentBlock === 'ram-header' && nextBlock === 'ram-hero') {
-        normalizedSections.push({
+        chunks.push({
           className: getSectionClass(['ram-header', 'ram-hero']),
           wrappers: [current, next],
         });
         i += 1;
       } else {
-        normalizedSections.push({
+        chunks.push({
           className: getSectionClass([currentBlock]),
           wrappers: [current],
         });
       }
     }
 
-    mergedSection.remove();
-    normalizedSections.forEach(({ className, wrappers: sectionWrappers }) => {
-      const section = document.createElement('div');
-      section.className = className;
+    if (chunks.length <= 1) return;
+
+    chunks.forEach(({ className, wrappers: sectionWrappers }) => {
+      const newSection = document.createElement('div');
+      newSection.className = className;
       sectionWrappers.forEach((wrapper) => {
-        section.appendChild(wrapper);
+        newSection.appendChild(wrapper);
       });
-      main.appendChild(section);
+      section.parentNode.insertBefore(newSection, section);
     });
-    return;
-  }
+
+    section.remove();
+  };
+
+  const allRamBlockNames = sections.flatMap((section) => getRamBlockNames(section));
+  const hasHeader = allRamBlockNames.includes('ram-header');
+  const hasHero = allRamBlockNames.includes('ram-hero');
+  if (!hasHeader || !hasHero) return;
 
   const currentSections = [...main.querySelectorAll(':scope > .section')];
   for (let i = 0; i < currentSections.length - 1; i += 1) {
@@ -176,6 +174,12 @@ function normalizeRamHomepageStructure(main) {
       }
     }
   }
+
+  [...main.querySelectorAll(':scope > .section')].forEach((section) => {
+    if (getRamWrappers(section).length > 1) {
+      splitSectionByWrappers(section);
+    }
+  });
 
   [...main.querySelectorAll(':scope > .section')].forEach((section) => {
     const blockNames = getRamBlockNames(section);
