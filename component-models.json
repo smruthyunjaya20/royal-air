@@ -213,6 +213,80 @@
     "fields": []
   },
   {
+    "id": "ram-our-fleet",
+    "fields": [
+      {
+        "component": "text",
+        "name": "heading",
+        "label": "Section Heading",
+        "valueType": "string"
+      },
+      {
+        "component": "container",
+        "name": "fleetItems",
+        "label": "Fleet Items",
+        "collectionName": "fleetItems",
+        "multi": true,
+        "fields": [
+          {
+            "component": "reference",
+            "name": "aircraftImage",
+            "label": "Aircraft Image",
+            "valueType": "string"
+          },
+          {
+            "component": "text",
+            "name": "imageAlt",
+            "label": "Image Alt Text",
+            "valueType": "string"
+          },
+          {
+            "component": "text",
+            "name": "aircraftName",
+            "label": "Aircraft Name",
+            "valueType": "string"
+          },
+          {
+            "component": "text",
+            "name": "numberOfAircrafts",
+            "label": "Number Of Aircrafts",
+            "valueType": "string"
+          },
+          {
+            "component": "text",
+            "name": "seatCapacity",
+            "label": "Seat Capacity",
+            "valueType": "string"
+          },
+          {
+            "component": "text",
+            "name": "length",
+            "label": "Length (m)",
+            "valueType": "string"
+          },
+          {
+            "component": "text",
+            "name": "cruisingAltitude",
+            "label": "Cruising Altitude (m)",
+            "valueType": "string"
+          },
+          {
+            "component": "text",
+            "name": "cruisingSpeed",
+            "label": "Cruising Speed (km/h)",
+            "valueType": "string"
+          },
+          {
+            "component": "text",
+            "name": "fuelCapacity",
+            "label": "Fuel capacity (l)",
+            "valueType": "string"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "ram-safar-flyer",
     "fields": []
   },
