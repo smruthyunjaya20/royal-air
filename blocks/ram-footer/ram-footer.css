@@ -5,10 +5,9 @@
   padding-left: 0;
   padding-right: 0;
   overflow: hidden;
-  background: #1b1515;
 }
 
-.section.ram-footer-container>div,
+.section.ram-footer-container>.ram-footer-wrapper,
 .section.ram-footer-container .ram-footer.block {
   max-width: none;
   width: 100%;

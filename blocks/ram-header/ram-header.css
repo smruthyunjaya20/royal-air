@@ -6,7 +6,7 @@
   z-index: 999;
 }
 
-.section.ram-header-container > div,
+.section.ram-header-container > .ram-header-wrapper,
 .section.ram-header-container .ram-header.block {
   max-width: none;
   width: 100%;

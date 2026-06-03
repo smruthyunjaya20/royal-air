@@ -4,11 +4,10 @@
   margin: 0;
   padding-left: 0;
   padding-right: 0;
-  background: linear-gradient(180deg, #f8f5ef 0 154px, #c8102e 154px 100%);
   overflow: visible;
 }
 
-.section.ram-download-app-container>div,
+.section.ram-download-app-container>.ram-download-app-wrapper,
 .section.ram-download-app-container .ram-download-app.block {
   max-width: none;
   width: 100%;

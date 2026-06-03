@@ -441,14 +441,14 @@
 }
 
 .ram-homepage-page .hero-overlay {
-  background: linear-gradient(90deg, rgba(10, 10, 10, 0.62) 0%, rgba(10, 10, 10, 0.36) 42%, rgba(10, 10, 10, 0.18) 100%);
+  background: none;
 }
 
 @media (min-width: 993px) {
   .ram-homepage-page .hero-background,
   .ram-homepage-page .hero-overlay {
-    top: 0;
-    bottom: -32px;
+    top: 30px;
+    bottom: -9px;
   }
 
   .ram-homepage-page .hero-background {
