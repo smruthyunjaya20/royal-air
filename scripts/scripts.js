@@ -267,7 +267,9 @@ async function loadEager(doc) {
   if (main) {
     decorateMain(main);
     document.body.classList.add('appear');
-    document.body.classList.add('ram-homepage-page');
+    const hasRamHeader = !!main.querySelector('.ram-header');
+    const hasRamHero = !!main.querySelector('.ram-hero');
+    document.body.classList.toggle('ram-homepage-page', hasRamHeader && hasRamHero);
     await loadSection(main.querySelector('.section'), waitForFirstImage);
   }
 
