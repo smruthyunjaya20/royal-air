@@ -418,8 +418,14 @@
   width: 100%;
 }
 
+.ram-homepage-page .ram-service-shortcuts-wrapper {
+  max-width: none;
+  width: 100%;
+}
+
 .ram-homepage-page .ram-service-shortcuts-container > div,
-.ram-homepage-page .ram-service-shortcuts-container .ram-service-shortcuts.block {
+.ram-homepage-page .ram-service-shortcuts-container .ram-service-shortcuts.block,
+.ram-homepage-page .ram-service-shortcuts-wrapper .ram-service-shortcuts.block {
   max-width: none;
   width: 100%;
   margin: 0;
