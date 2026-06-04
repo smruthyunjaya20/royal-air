@@ -100,56 +100,91 @@ function normalizeRamHomepageStructure(main) {
   if (main.querySelector('[data-aue-resource]')) return;
 
   const sections = [...main.querySelectorAll(':scope > .section')];
-  if (sections.length !== 1) return;
+  if (!sections.length) return;
 
-  const mergedSection = sections[0];
-  const wrappers = [...mergedSection.querySelectorAll(':scope > div')];
-  const ramWrappers = wrappers.filter((wrapper) => getRamBlockName(wrapper));
+  const getWrappers = (section) => [...section.querySelectorAll(':scope > div')];
+  const getRamWrappers = (section) => getWrappers(section)
+    .filter((wrapper) => getRamBlockName(wrapper));
+  const getRamBlockNames = (section) => getRamWrappers(section)
+    .map((wrapper) => getRamBlockName(wrapper));
+  const splitSectionByWrappers = (section) => {
+    const wrappers = getWrappers(section);
+    if (wrappers.length <= 1) return;
 
-  if (ramWrappers.length < 6) return;
+    const chunks = [];
+    for (let i = 0; i < wrappers.length; i += 1) {
+      const current = wrappers[i];
+      const currentBlock = getRamBlockName(current);
+      const next = wrappers[i + 1];
+      const nextBlock = getRamBlockName(next);
 
-  const hasHeader = ramWrappers.some((wrapper) => getRamBlockName(wrapper) === 'ram-header');
-  const hasHero = ramWrappers.some((wrapper) => getRamBlockName(wrapper) === 'ram-hero');
-  const hasShortcuts = ramWrappers.some((wrapper) => getRamBlockName(wrapper) === 'ram-service-shortcuts');
-  if (!hasHeader || !hasHero || !hasShortcuts) return;
+      if (!currentBlock) {
+        chunks.push({ className: 'section', wrappers: [current] });
+        continue;
+      }
 
-  const normalizedSections = [];
-  for (let i = 0; i < wrappers.length; i += 1) {
-    const current = wrappers[i];
-    const currentBlock = getRamBlockName(current);
-    const next = wrappers[i + 1];
-    const nextBlock = getRamBlockName(next);
-
-    if (!currentBlock) {
-      normalizedSections.push({
-        className: 'section',
-        wrappers: [current],
-      });
-      continue;
+      if (currentBlock === 'ram-header' && nextBlock === 'ram-hero') {
+        chunks.push({
+          className: getSectionClass(['ram-header', 'ram-hero']),
+          wrappers: [current, next],
+        });
+        i += 1;
+      } else {
+        chunks.push({
+          className: getSectionClass([currentBlock]),
+          wrappers: [current],
+        });
+      }
     }
 
-    if (currentBlock === 'ram-header' && nextBlock === 'ram-hero') {
-      normalizedSections.push({
-        className: getSectionClass(['ram-header', 'ram-hero']),
-        wrappers: [current, next],
+    if (chunks.length <= 1) return;
+
+    chunks.forEach(({ className, wrappers: sectionWrappers }) => {
+      const newSection = document.createElement('div');
+      newSection.className = className;
+      sectionWrappers.forEach((wrapper) => {
+        newSection.appendChild(wrapper);
       });
-      i += 1;
-    } else {
-      normalizedSections.push({
-        className: getSectionClass([currentBlock]),
-        wrappers: [current],
-      });
+      section.parentNode.insertBefore(newSection, section);
+    });
+
+    section.remove();
+  };
+
+  const allRamBlockNames = sections.flatMap((section) => getRamBlockNames(section));
+  const hasHeader = allRamBlockNames.includes('ram-header');
+  const hasHero = allRamBlockNames.includes('ram-hero');
+  if (!hasHeader || !hasHero) return;
+
+  const currentSections = [...main.querySelectorAll(':scope > .section')];
+  for (let i = 0; i < currentSections.length - 1; i += 1) {
+    const section = currentSections[i];
+    const nextSection = currentSections[i + 1];
+    const currentBlockNames = getRamBlockNames(section);
+    const nextBlockNames = getRamBlockNames(nextSection);
+
+    if (currentBlockNames.length === 1
+      && nextBlockNames.length === 1
+      && currentBlockNames[0] === 'ram-header'
+      && nextBlockNames[0] === 'ram-hero') {
+      const heroWrapper = getRamWrappers(nextSection)[0];
+      if (heroWrapper) {
+        section.appendChild(heroWrapper);
+        nextSection.remove();
+      }
     }
   }
 
-  mergedSection.remove();
-  normalizedSections.forEach(({ className, wrappers: sectionWrappers }) => {
-    const section = document.createElement('div');
-    section.className = className;
-    sectionWrappers.forEach((wrapper) => {
-      section.appendChild(wrapper);
-    });
-    main.appendChild(section);
+  [...main.querySelectorAll(':scope > .section')].forEach((section) => {
+    if (getRamWrappers(section).length > 1) {
+      splitSectionByWrappers(section);
+    }
+  });
+
+  [...main.querySelectorAll(':scope > .section')].forEach((section) => {
+    const blockNames = getRamBlockNames(section);
+    if (!blockNames.length) return;
+    section.className = getSectionClass(blockNames);
   });
 }
 
@@ -232,7 +267,9 @@ async function loadEager(doc) {
   if (main) {
     decorateMain(main);
     document.body.classList.add('appear');
-    document.body.classList.add('ram-homepage-page');
+    const hasRamHeader = !!main.querySelector('.ram-header');
+    const hasRamHero = !!main.querySelector('.ram-hero');
+    document.body.classList.toggle('ram-homepage-page', hasRamHeader && hasRamHero);
     await loadSection(main.querySelector('.section'), waitForFirstImage);
   }
 
