@@ -18,7 +18,7 @@ export default function decorate(block) {
 
         <!-- Logo -->
         <div class="logo-section">
-          <a href="/">
+          <a href="/us/en/eds/home">
             <img class="header__logo__img" src="/icons/logo_ram.svg" alt="Royal Air Maroc" />
           </a>
           <a href="/oneworld" class="header__oneworld" id="oneworld-logo-desktop">
