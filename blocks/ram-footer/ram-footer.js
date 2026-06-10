@@ -3,11 +3,26 @@ export default function decorate(block) {
     {
       title: 'About us',
       links: [
-        'Our Fleet',
-        'Our Network',
-        'Our Partners',
-        'Dreamliner',
-        'Mobile App',
+        {
+          label: 'Our Fleet',
+          href: '/us/en/eds/about-us/our-fleet',
+        },
+        {
+          label: 'Our Network',
+          href: '/us/en/eds/about-us/our-network',
+        },
+        {
+          label: 'Our Partners',
+          href: '/us/en/eds/about-us/alliance-partnerships',
+        },
+        {
+          label: 'Dreamliner',
+          href: '/us/en/eds/about-us/dreamliner',
+        },
+        {
+          label: 'Mobile App',
+          href: '/us/en/eds/about-us/ram-assistant',
+        },
         'Royal Air Marco Cargo',
         'International United for Wildlife Taskforce',
       ],
@@ -192,10 +207,14 @@ export default function decorate(block) {
       <path d="m16 16 4.5 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
     </svg>`;
 
-  const renderLinkItems = (links) => links.map((link) => `
+  const renderLinkItems = (links) => links.map((link) => {
+    const linkConfig = typeof link === 'string' ? { label: link, href: '#' } : link;
+
+    return `
     <li>
-      <a href="#">${link}</a>
-    </li>`).join('');
+      <a href="${linkConfig.href}">${linkConfig.label}</a>
+    </li>`;
+  }).join('');
 
   const renderPanelContent = (group) => {
     if (group.sections) {
