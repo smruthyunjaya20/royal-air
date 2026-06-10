@@ -13,6 +13,7 @@ function pushToDataLayer(eventName, eventData) {
 
 export function capturePageLoadDefaults(block) {
   const defaultData = {
+    action_type: 'booking',
     trip_type: block.querySelector('.trip-btn.active')?.textContent?.trim().toLowerCase() || 'round-trip',
     origin_value: block.querySelector('.js-origin-value')?.textContent?.trim() || '',
     origin_code: block.querySelector('.js-origin-code')?.textContent?.trim() || '',
@@ -36,13 +37,20 @@ export function initializeEventTracking(block) {
 
   capturePageLoadDefaults(block);
 
-  // Track tab changes (action_type: booking, checkin, flight_status)
+  // Map data-tab values to action_type
+  const tabActionTypeMap = {
+    flight: 'booking',
+    checkin: 'check_in',
+    status: 'flight_status'
+  };
+
+  // Track tab changes (action_type: booking, check_in, flight_status)
   const bookingTabs = block.querySelectorAll('.tab');
   bookingTabs.forEach((tab) => {
     tab.addEventListener('click', () => {
       const tabType = tab.getAttribute('data-tab');
       const eventData = {
-        action_type: tabType === 'flight' ? 'booking' : tabType,
+        action_type: tabActionTypeMap[tabType] || 'booking',
       };
       pushToDataLayer('action_type', eventData);
     });
@@ -150,8 +158,23 @@ export function initializeEventTracking(block) {
   const searchBtn = block.querySelector('.search-flight-btn');
   if (searchBtn) {
     searchBtn.addEventListener('click', () => {
+      const activeTab = block.querySelector('.tab.active')?.getAttribute('data-tab') || 'flight';
       const eventData = {
-        submitted : true
+        submitted: true,
+        action_type: tabActionTypeMap[activeTab] || 'booking',
+        trip_type: block.querySelector('.trip-btn.active')?.textContent?.trim().toLowerCase() || 'round-trip',
+        origin: block.querySelector('.js-origin-value')?.textContent?.trim() || '',
+        origin_code: block.querySelector('.js-origin-code')?.textContent?.trim() || '',
+        destination: block.querySelector('.js-destination-value')?.textContent?.trim() || '',
+        destination_code: block.querySelector('.js-destination-code')?.textContent?.trim() || '',
+        departure_date: block.querySelector('.js-departure')?.value || '',
+        return_date: block.querySelector('.js-return')?.value || '',
+        passenger_count: {
+          adult_count: block.querySelector('.counter-row[data-type="adult"] .counter-value')?.textContent?.trim() || '1',
+          child_count: block.querySelector('.counter-row[data-type="child"] .counter-value')?.textContent?.trim() || '0',
+          infant_count: block.querySelector('.counter-row[data-type="infant"] .counter-value')?.textContent?.trim() || '0'
+        },
+        cabin_class: block.querySelector('.cabin-options input[type="radio"]:checked')?.value || 'economy'
       };
       pushToDataLayer('search_flight', eventData);
     });
