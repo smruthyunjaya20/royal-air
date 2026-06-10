@@ -5,7 +5,7 @@ import { initializeEventTracking } from './event-tracker.js';
 function parseFields(block) {
   const fields = {};
   const rows = [...block.children];
-  const modelOrder = ['image', 'imageAlt', 'headingText', 'description'];
+  const modelOrder = ['image', 'imageAlt', 'headingText', 'description', 'searchFlightHref'];
   const fallbackOrder = ['image', 'headingText', 'description'];
 
   rows.forEach((row, index) => {
@@ -98,6 +98,7 @@ export default function decorate(block) {
   const fields = parseFields(block);
   const headingText = fields.headingText?.textContent?.trim() || 'Uncover the Magic of Marrakech';
   const descriptionHtml = fields.description?.innerHTML?.trim();
+  const searchFlightHref = fields.searchFlightHref?.textContent?.trim() || '';
 
   block.innerHTML = `
     <section class="ram-hero">
@@ -594,7 +595,7 @@ export default function decorate(block) {
   };
 
   const buildFlightSearchUrl = () => {
-    const basePath = '/content/edsuedemo/us/en/ram/aem/booking/flight-search';
+    const basePath = searchFlightHref || '/content/edsuedemo/us/en/ram/aem/booking/flight-search';
     const params = new URLSearchParams();
 
     const origin = originCode?.textContent?.trim();

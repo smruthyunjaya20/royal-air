@@ -47,6 +47,14 @@
           "value": "",
           "label": "Description",
           "valueType": "string"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "searchFlightHref",
+          "label": "Search Flight Button URL",
+          "description": "Base URL for the Search Flights button. Query params are appended automatically.",
+          "value": ""
         }
       ]
     }
