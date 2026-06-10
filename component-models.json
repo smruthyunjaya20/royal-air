@@ -148,6 +148,10 @@
     "fields": []
   },
   {
+    "id": "ram-assistant-tab",
+    "fields": []
+  },
+  {
     "id": "ram-download-app",
     "fields": []
   },
@@ -198,6 +202,10 @@
   },
   {
     "id": "ram-network-accordion",
+    "fields": []
+  },
+  {
+    "id": "ram-network-tab",
     "fields": []
   },
   {
