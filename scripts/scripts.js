@@ -1,5 +1,7 @@
 import {
-  buildBlock,
+  loadHeader,
+  loadFooter,
+  decorateButtons,
   decorateIcons,
   decorateSections,
   decorateBlocks,
@@ -8,25 +10,41 @@ import {
   loadSection,
   loadSections,
   loadCSS,
+  getMetadata,
 } from './aem.js';
+//import { hello } from "./utils.js";
+/**
+ * Moves all the attributes from a given elmenet to another given element.
+ * @param {Element} from the element to copy attributes from
+ * @param {Element} to the element to copy attributes to
+ */
+export function moveAttributes(from, to, attributes) {
+  if (!attributes) {
+    // eslint-disable-next-line no-param-reassign
+    attributes = [...from.attributes].map(({ nodeName }) => nodeName);
+  }
+  attributes.forEach((attr) => {
+    const value = from.getAttribute(attr);
+    if (value) {
+      to?.setAttribute(attr, value);
+      from.removeAttribute(attr);
+    }
+  });
+}
 
 /**
- * Builds hero block and prepends to main in a new section.
- * @param {Element} main The container element
+ * Move instrumentation attributes from a given element to another given element.
+ * @param {Element} from the element to copy attributes from
+ * @param {Element} to the element to copy attributes to
  */
-function buildHeroBlock(main) {
-  const h1 = main.querySelector('h1');
-  const picture = main.querySelector('picture');
-  // eslint-disable-next-line no-bitwise
-  if (h1 && picture && (h1.compareDocumentPosition(picture) & Node.DOCUMENT_POSITION_PRECEDING)) {
-    // Check if h1 or picture is already inside a hero block
-    if (h1.closest('.hero') || picture.closest('.hero')) {
-      return; // Don't create a duplicate hero block
-    }
-    const section = document.createElement('div');
-    section.append(buildBlock('hero', { elems: [picture, h1] }));
-    main.prepend(section);
-  }
+export function moveInstrumentation(from, to) {
+  moveAttributes(
+    from,
+    to,
+    [...from.attributes]
+      .map(({ nodeName }) => nodeName)
+      .filter((attr) => attr.startsWith('data-aue-') || attr.startsWith('data-richtext-')),
+  );
 }
 
 /**
@@ -45,27 +63,9 @@ async function loadFonts() {
  * Builds all synthetic blocks in a container element.
  * @param {Element} main The container element
  */
-function buildAutoBlocks(main) {
+function buildAutoBlocks() {
   try {
-    // auto load `*/fragments/*` references
-    const fragments = [...main.querySelectorAll('a[href*="/fragments/"]')].filter((f) => !f.closest('.fragment'));
-    if (fragments.length > 0) {
-      // eslint-disable-next-line import/no-cycle
-      import('../blocks/fragment/fragment.js').then(({ loadFragment }) => {
-        fragments.forEach(async (fragment) => {
-          try {
-            const { pathname } = new URL(fragment.href);
-            const frag = await loadFragment(pathname);
-            fragment.parentElement.replaceWith(...frag.children);
-          } catch (error) {
-            // eslint-disable-next-line no-console
-            console.error('Fragment loading failed', error);
-          }
-        });
-      });
-    }
-
-    buildHeroBlock(main);
+    // TODO: add auto block, if needed
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Auto Blocking failed', error);
@@ -96,149 +96,53 @@ function getSectionClass(blockNames) {
 }
 
 function normalizeRamHomepageStructure(main) {
-  // In UE canvas, keep authored section nodes intact so section selection/add works reliably.
-  if (main.querySelector('[data-aue-resource]')) return;
-
   const sections = [...main.querySelectorAll(':scope > .section')];
-  if (!sections.length) return;
+  if (sections.length !== 1) return;
 
-  const getWrappers = (section) => [...section.querySelectorAll(':scope > div')];
-  const getRamWrappers = (section) => getWrappers(section)
+  const mergedSection = sections[0];
+  const wrappers = [...mergedSection.querySelectorAll(':scope > div')]
     .filter((wrapper) => getRamBlockName(wrapper));
-  const getRamBlockNames = (section) => getRamWrappers(section)
-    .map((wrapper) => getRamBlockName(wrapper));
-  const splitSectionByWrappers = (section) => {
-    const wrappers = getWrappers(section);
-    if (wrappers.length <= 1) return;
 
-    const chunks = [];
-    for (let i = 0; i < wrappers.length; i += 1) {
-      const current = wrappers[i];
-      const currentBlock = getRamBlockName(current);
-      const next = wrappers[i + 1];
-      const nextBlock = getRamBlockName(next);
+  if (wrappers.length < 6) return;
 
-      if (!currentBlock) {
-        chunks.push({ className: 'section', wrappers: [current] });
-        continue;
-      }
+  const hasHero = wrappers.some((wrapper) => getRamBlockName(wrapper) === 'ram-hero');
+  const hasShortcuts = wrappers.some((wrapper) => getRamBlockName(wrapper) === 'ram-service-shortcuts');
+  if (!hasHero || !hasShortcuts) return;
 
-      if (currentBlock === 'ram-header' && nextBlock === 'ram-hero') {
-        chunks.push({
-          className: getSectionClass(['ram-header', 'ram-hero']),
-          wrappers: [current, next],
-        });
-        i += 1;
-      } else {
-        chunks.push({
-          className: getSectionClass([currentBlock]),
-          wrappers: [current],
-        });
-      }
-    }
+  const normalizedSections = [];
+  for (let i = 0; i < wrappers.length; i += 1) {
+    const current = wrappers[i];
+    const currentBlock = getRamBlockName(current);
+    const next = wrappers[i + 1];
+    const nextBlock = getRamBlockName(next);
 
-    if (chunks.length <= 1) return;
-
-    chunks.forEach(({ className, wrappers: sectionWrappers }) => {
-      const newSection = document.createElement('div');
-      newSection.className = className;
-      sectionWrappers.forEach((wrapper) => {
-        newSection.appendChild(wrapper);
+    if (currentBlock === 'ram-header' && nextBlock === 'ram-hero') {
+      normalizedSections.push({
+        className: getSectionClass(['ram-header', 'ram-hero']),
+        wrappers: [current, next],
       });
-      section.parentNode.insertBefore(newSection, section);
-    });
-
-    section.remove();
-  };
-
-  const allRamBlockNames = sections.flatMap((section) => getRamBlockNames(section));
-  const hasHeader = allRamBlockNames.includes('ram-header');
-  const hasHero = allRamBlockNames.includes('ram-hero');
-  if (!hasHeader || !hasHero) return;
-
-  const currentSections = [...main.querySelectorAll(':scope > .section')];
-  for (let i = 0; i < currentSections.length - 1; i += 1) {
-    const section = currentSections[i];
-    const nextSection = currentSections[i + 1];
-    const currentBlockNames = getRamBlockNames(section);
-    const nextBlockNames = getRamBlockNames(nextSection);
-
-    if (currentBlockNames.length === 1
-      && nextBlockNames.length === 1
-      && currentBlockNames[0] === 'ram-header'
-      && nextBlockNames[0] === 'ram-hero') {
-      const heroWrapper = getRamWrappers(nextSection)[0];
-      if (heroWrapper) {
-        section.appendChild(heroWrapper);
-        nextSection.remove();
-      }
+      i += 1;
+    } else if (currentBlock === 'ram-hero') {
+      normalizedSections.push({
+        className: getSectionClass(['ram-header', 'ram-hero']),
+        wrappers: [current],
+      });
+    } else {
+      normalizedSections.push({
+        className: getSectionClass([currentBlock]),
+        wrappers: [current],
+      });
     }
   }
 
-  [...main.querySelectorAll(':scope > .section')].forEach((section) => {
-    if (getRamWrappers(section).length > 1) {
-      splitSectionByWrappers(section);
-    }
-  });
-
-  [...main.querySelectorAll(':scope > .section')].forEach((section) => {
-    const blockNames = getRamBlockNames(section);
-    if (!blockNames.length) return;
-    section.className = getSectionClass(blockNames);
-  });
-}
-
-/**
- * Decorates formatted links to style them as buttons.
- * @param {HTMLElement} main The main container element
- */
-function decorateButtons(main) {
-  main.querySelectorAll('p a[href]').forEach((a) => {
-    a.title = a.title || a.textContent;
-    const p = a.closest('p');
-    const text = a.textContent.trim();
-
-    // quick structural checks
-    if (a.querySelector('img') || p.textContent.trim() !== text) return;
-
-    // skip URL display links
-    try {
-      if (new URL(a.href).href === new URL(text, window.location).href) return;
-    } catch { /* continue */ }
-
-    // require authored formatting for buttonization
-    const strong = a.closest('strong');
-    const em = a.closest('em');
-    if (!strong && !em) return;
-
-    p.className = 'button-wrapper';
-    a.className = 'button';
-    if (strong && em) { // high-impact call-to-action
-      a.classList.add('accent');
-      const outer = strong.contains(em) ? strong : em;
-      outer.replaceWith(a);
-    } else if (strong) {
-      a.classList.add('primary');
-      strong.replaceWith(a);
-    } else {
-      a.classList.add('secondary');
-      em.replaceWith(a);
-    }
-  });
-}
-
-/**
- * Moves Universal Editor instrumentation attributes from one element to another.
- * @param {Element} source The source element containing authored attributes
- * @param {Element} target The target element that should keep instrumentation
- */
-export function moveInstrumentation(source, target) {
-  if (!source || !target || !source.attributes) return;
-
-  [...source.attributes].forEach(({ name, value }) => {
-    if (name.startsWith('data-aue-') || name.startsWith('data-richtext-')) {
-      target.setAttribute(name, value);
-    }
+  mergedSection.remove();
+  normalizedSections.forEach(({ className, wrappers: sectionWrappers }) => {
+    const section = document.createElement('div');
+    section.className = className;
+    sectionWrappers.forEach((wrapper) => {
+      section.appendChild(wrapper);
+    });
+    main.appendChild(section);
   });
 }
 
@@ -248,12 +152,88 @@ export function moveInstrumentation(source, target) {
  */
 // eslint-disable-next-line import/prefer-default-export
 export function decorateMain(main) {
+  // hopefully forward compatible button decoration
+  decorateButtons(main);
   decorateIcons(main);
   buildAutoBlocks(main);
   decorateSections(main);
   normalizeRamHomepageStructure(main);
   decorateBlocks(main);
-  decorateButtons(main);
+}
+
+function initATJS(path, config) {
+  window.targetGlobalSettings = config;
+  return new Promise((resolve) => {
+    import(path).then(resolve);
+  });
+}
+
+function onDecoratedElement(fn) {
+  // Apply propositions to all already decorated blocks/sections
+  if (document.querySelector('[data-block-status="loaded"],[data-section-status="loaded"]')) {
+    fn();
+  }
+
+  const observer = new MutationObserver((mutations) => {
+    if (mutations.some((m) => m.target.tagName === 'BODY'
+      || m.target.dataset.sectionStatus === 'loaded'
+      || m.target.dataset.blockStatus === 'loaded')) {
+      fn();
+    }
+  });
+  // Watch sections and blocks being decorated async
+  observer.observe(document.querySelector('main'), {
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['data-block-status', 'data-section-status'],
+  });
+  // Watch anything else added to the body
+  observer.observe(document.querySelector('body'), { childList: true });
+}
+
+function toCssSelector(selector) {
+  return selector.replace(/(\.\S+)?:eq\((\d+)\)/g, (_, clss, i) => `:nth-child(${Number(i) + 1}${clss ? ` of ${clss})` : ''}`);
+}
+
+async function getElementForOffer(offer) {
+  const selector = offer.cssSelector || toCssSelector(offer.selector);
+  return document.querySelector(selector);
+}
+
+async function getElementForMetric(metric) {
+  const selector = toCssSelector(metric.selector);
+  return document.querySelector(selector);
+}
+
+async function getAndApplyOffers() {
+  const response = await window.adobe.target.getOffers({ request: { execute: { pageLoad: {} } } });
+  const { options = [], metrics = [] } = response.execute.pageLoad;
+  onDecoratedElement(() => {
+    window.adobe.target.applyOffers({ response });
+    // keeping track of offers that were already applied
+    options.forEach((o) => o.content ? o.content.filter((c) => !getElementForOffer(c)) : '');
+    // keeping track of metrics that were already applied
+    metrics.map((m, i) => getElementForMetric(m) ? i : -1)
+      .filter((i) => i >= 0)
+      .reverse()
+      .map((i) => metrics.splice(i, 1));
+  });
+}
+
+let atjsPromise = Promise.resolve();
+if (getMetadata('target')) {
+  atjsPromise = initATJS('./martech/libraries/at.js', {
+    clientCode: 'epam',
+    serverDomain: 'epam.tt.omtrdc.net',
+    imsOrgId: '36DE898555D732137F000101@AdobeOrg',
+    bodyHidingEnabled: false,
+    cookieDomain: window.location.hostname,
+    pageLoadEnabled: false,
+    secureOnly: true,
+    viewsEnabled: false,
+    withWebGLRenderer: false,
+  });
+  document.addEventListener('at-library-loaded', () => getAndApplyOffers());
 }
 
 /**
@@ -263,16 +243,34 @@ export function decorateMain(main) {
 async function loadEager(doc) {
   document.documentElement.lang = 'en';
   decorateTemplateAndTheme();
+
+  // Kick off header decoration immediately, in parallel with atjs wait + LCP work.
+  // Don't await here — let it run concurrently with everything below.
+  const headerEl = doc.querySelector('header');
+  if (headerEl) {
+    loadHeader(headerEl).catch((err) => {
+      // eslint-disable-next-line no-console
+      console.error('Header load failed', err);
+    });
+  }
   const main = doc.querySelector('main');
   if (main) {
     decorateMain(main);
     document.body.classList.add('appear');
-    const hasRamHeader = !!main.querySelector('.ram-header');
-    const hasRamHero = !!main.querySelector('.ram-hero');
-    document.body.classList.toggle('ram-homepage-page', hasRamHeader && hasRamHero);
-    await loadSection(main.querySelector('.section'), waitForFirstImage);
+    document.body.classList.add('ram-homepage-page');
+    // wait for atjs to finish loading
+    await atjsPromise;
+    // break up possible long tasks before showing the LCP block to reduce TBT
+    await new Promise((resolve) => {
+      window.setTimeout(async () => {
+        // For newer AEM boilerplate, use this
+        await loadSection(main.querySelector('.section'), waitForFirstImage)
+        // For older AEM boilerplate versions, use this instead
+        // await waitForLCP(LCP_BLOCKS);
+        resolve();
+      }, 0);
+    });
   }
-
   try {
     /* if desktop (proxy for fast connection) or fonts already loaded, load fonts.css */
     if (window.innerWidth >= 900 || sessionStorage.getItem('fonts-loaded')) {
@@ -288,8 +286,6 @@ async function loadEager(doc) {
  * @param {Element} doc The container element
  */
 async function loadLazy(doc) {
-  //loadHeader(doc.querySelector('header'));
-
   const main = doc.querySelector('main');
   await loadSections(main);
 
@@ -297,7 +293,8 @@ async function loadLazy(doc) {
   const element = hash ? doc.getElementById(hash.substring(1)) : false;
   if (hash && element) element.scrollIntoView();
 
-  //loadFooter(doc.querySelector('footer'));
+  //loadHeader(doc.querySelector('header'));
+  loadFooter(doc.querySelector('footer'));
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
@@ -309,6 +306,7 @@ async function loadLazy(doc) {
  */
 function loadDelayed() {
   // eslint-disable-next-line import/no-cycle
+  console.log("Load delayed function called - script.js")
   window.setTimeout(() => import('./delayed.js'), 3000);
   // load anything that can be postponed to the latest here
 }
@@ -320,3 +318,9 @@ async function loadPage() {
 }
 
 loadPage();
+
+document.addEventListener("DOMContentLoaded", () => {
+  const userLang = navigator?.language?.toLowerCase?.() || "en";
+  document.documentElement.setAttribute("data-lang", userLang);
+});
+
