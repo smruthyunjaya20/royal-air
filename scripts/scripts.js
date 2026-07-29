@@ -159,12 +159,12 @@ export function decorateMain(main) {
   decorateBlocks(main);
 }
 
-function initATJS(path, config) {
+/*function initATJS(path, config) {
   window.targetGlobalSettings = config;
   return new Promise((resolve) => {
     import(path).then(resolve);
   });
-}
+}*/
 
 function onDecoratedElement(fn) {
   // Apply propositions to all already decorated blocks/sections
@@ -218,7 +218,7 @@ async function getAndApplyOffers() {
   });
 }
 
-let atjsPromise = Promise.resolve();
+/*let atjsPromise = Promise.resolve();
 if (getMetadata('target')) {
   atjsPromise = initATJS('./martech/libraries/at.js', {
     clientCode: 'epam',
@@ -232,7 +232,7 @@ if (getMetadata('target')) {
     withWebGLRenderer: false,
   });
   document.addEventListener('at-library-loaded', () => getAndApplyOffers());
-}
+}*/
 
 /**
  * Loads everything needed to get to LCP.
@@ -257,7 +257,7 @@ async function loadEager(doc) {
     document.body.classList.add('appear');
     document.body.classList.add('ram-homepage-page');
     // wait for atjs to finish loading
-    await atjsPromise;
+    //await atjsPromise;
     // break up possible long tasks before showing the LCP block to reduce TBT
     await new Promise((resolve) => {
       window.setTimeout(async () => {
