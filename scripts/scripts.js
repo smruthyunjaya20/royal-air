@@ -1,6 +1,4 @@
 import {
-  loadHeader,
-  loadFooter,
   decorateButtons,
   decorateIcons,
   decorateSections,
@@ -247,12 +245,12 @@ async function loadEager(doc) {
   // Kick off header decoration immediately, in parallel with atjs wait + LCP work.
   // Don't await here — let it run concurrently with everything below.
   const headerEl = doc.querySelector('header');
-  if (headerEl) {
+  /*if (headerEl) {
     loadHeader(headerEl).catch((err) => {
       // eslint-disable-next-line no-console
       console.error('Header load failed', err);
     });
-  }
+  }*/
   const main = doc.querySelector('main');
   if (main) {
     decorateMain(main);
@@ -294,7 +292,7 @@ async function loadLazy(doc) {
   if (hash && element) element.scrollIntoView();
 
   //loadHeader(doc.querySelector('header'));
-  loadFooter(doc.querySelector('footer'));
+  //loadFooter(doc.querySelector('footer'));
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
