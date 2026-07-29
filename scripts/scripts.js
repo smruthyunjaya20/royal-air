@@ -1,4 +1,5 @@
 import {
+  buildBlock,
   decorateButtons,
   decorateIcons,
   decorateSections,
@@ -61,9 +62,17 @@ async function loadFonts() {
  * Builds all synthetic blocks in a container element.
  * @param {Element} main The container element
  */
-function buildAutoBlocks() {
+function buildAutoBlocks(main) {
   try {
-    // TODO: add auto block, if needed
+    // Local-only demo: inject Aram Test at the top of the homepage.
+    // For production, add the block via AEM Universal Editor instead.
+    if (!window.location.hostname.includes('localhost')) return;
+    if (window.location.pathname !== '/' && window.location.pathname !== '/index') return;
+    if (main.querySelector('.aram-test')) return;
+
+    const section = document.createElement('div');
+    section.append(buildBlock('aram-test', { elems: [] }));
+    main.prepend(section);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Auto Blocking failed', error);
